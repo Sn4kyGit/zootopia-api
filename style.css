@@ -64,3 +64,32 @@ html,body{ margin:0; padding:0; font-family: system-ui, -apple-system, Segoe UI,
   font-weight: 700;
   margin-right: 6px;
 }
+/* Empty state (no results / API-Fehler) */
+.empty{
+  max-width: 920px;
+  margin: 24px auto;
+  padding: 20px 22px;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.03);
+  color: var(--ink);
+}
+
+.empty h2{
+  margin: 0 0 8px;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: .02em;
+}
+
+.empty p{
+  margin: 0;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.empty__hint{
+  margin-top: 6px;
+  font-size: .95rem;
+}

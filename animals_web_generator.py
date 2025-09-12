@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Zootopia with API – Milestone 2
-- Fragt den Tiernamen ab (input)
-- Holt die Daten von API Ninjas (name=<eingabe>)
-- Erzeugt animals.html aus dem Template
-"""
-
 from __future__ import annotations
-import html, json, os, sys
+import html, os, sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 import requests  # pip install requests
@@ -20,7 +13,6 @@ API_URL = "https://api.api-ninjas.com/v1/animals"
 # ---------- IO ----------
 def read_text(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
-
 def write_text(path: str | Path, content: str) -> None:
     Path(path).write_text(content, encoding="utf-8")
 
@@ -57,14 +49,13 @@ def fetch_animals_from_api(name_query: str, api_key: str) -> List[Dict[str, Any]
     resp.raise_for_status()
     data = resp.json()
     if not isinstance(data, list):
-        raise RuntimeError("Unexpected API response (expected a list).")
+        return []
     return [x for x in data if isinstance(x, dict)]
 
-# ---------- serialization ----------
+# ---------- renderers ----------
 def serialize_animal(animal: Dict[str, Any]) -> str:
     name = get_field(animal, "name")
     title_html = f'  <div class="card__title">{html.escape(str(name))}</div>\n' if name else ""
-
     facts: List[tuple[str, Any]] = []
     for label, keys in [
         ("Diet", ("diet",)),
@@ -86,54 +77,70 @@ def serialize_animal(animal: Dict[str, Any]) -> str:
                 val = val[0]
         if val is not None:
             facts.append((label, val))
-
     if not (title_html or facts): return ""
-
     facts_html = "\n".join(
         f'        <li class="card__fact"><span class="label">{html.escape(label)}:</span> {format_value(val)}</li>'
         for label, val in facts
     )
-
     item = '  <li class="cards__item">\n'
     if title_html: item += title_html
-    item += '  <div class="card__text">\n'
-    item += '    <ul class="card__facts">\n' + facts_html + "\n"
-    item += "    </ul>\n  </div>\n  </li>\n"
+    item += '  <div class="card__text">\n    <ul class="card__facts">\n'
+    item += facts_html + "\n    </ul>\n  </div>\n  </li>\n"
     return item
 
 def build_cards(animals: Iterable[Dict[str, Any]]) -> str:
     return "".join(serialize_animal(a) for a in animals if isinstance(a, dict))
+
+def render_empty(query: str, details: str | None = None) -> str:
+    q = html.escape(query)
+    det = f"<p class=\"empty__hint\">{html.escape(details)}</p>" if details else ""
+    return (
+        f'<section class="empty">'
+        f'<h2>The animal "{q}" doesn\'t exist.</h2>'
+        f'<p>Try a different name (e.g., "Fox", "Bear", "Eagle").</p>'
+        f'{det}'
+        f"</section>"
+    )
 
 # ---------- main ----------
 def main() -> None:
     template_path = sys.argv[1] if len(sys.argv) > 1 else "animals_template.html"
     out_path      = sys.argv[2] if len(sys.argv) > 2 else "animals.html"
 
-    # 1) Nutzer-Eingabe (nicht leer)
     query = ""
     while not query:
         query = input("Enter a name of an animal: ").strip()
 
-    # 2) Template laden
     template_html = read_text(template_path)
 
-    # 3) API-Key (ENV bevorzugt, sonst bereitgestellter Key)
     api_key = os.getenv("API_NINJAS_KEY", "yCVFwvLElGXaZ24+Gu0q5Q==YjW5E3z1TR2NEafS").strip()
     if not api_key:
-        print("Missing API key. Set API_NINJAS_KEY."); sys.exit(1)
+        write_text(out_path, template_html.replace(PLACEHOLDER, render_empty(query, "Missing API key.")))
+        print("Website was generated with an error message (missing API key)."); return
 
-    # 4) Daten holen & Seite erzeugen
     try:
         animals = fetch_animals_from_api(query, api_key)
     except requests.HTTPError as e:
-        print(f"API error: {e.response.status_code} {e.response.text}"); sys.exit(1)
+        msg = f"API error: {e.response.status_code}"
+        try:
+            msg += f" • {e.response.json()}"
+        except Exception:
+            msg += f" • {e.response.text[:200]}"
+        html_content = template_html.replace(PLACEHOLDER, render_empty(query, msg))
+        write_text(out_path, html_content)
+        print("Website was generated with an API error message."); return
     except Exception as e:
-        print(f"Error fetching data: {e}"); sys.exit(1)
+        html_content = template_html.replace(PLACEHOLDER, render_empty(query, f"Unexpected error: {e}"))
+        write_text(out_path, html_content)
+        print("Website was generated with an error message."); return
 
-    cards_html = build_cards(animals)
-    final_html = template_html.replace(PLACEHOLDER, cards_html if cards_html else "<p>No results.</p>")
-    write_text(out_path, final_html)
+    # Ergebnis schreiben – leerer Treffer => hübsche Nachricht
+    if not animals:
+        html_content = template_html.replace(PLACEHOLDER, render_empty(query))
+    else:
+        html_content = template_html.replace(PLACEHOLDER, build_cards(animals))
 
+    write_text(out_path, html_content)
     print("Website was successfully generated to the file animals.html.")
 
 if __name__ == "__main__":
