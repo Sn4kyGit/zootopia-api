@@ -1,29 +1,41 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Zootopia with API — Website Generator
+- Fragt den Tiernamen ab
+- Holt die Daten via data_fetcher.fetch_data()
+- Rendert Cards oder eine leere-State-Meldung
+"""
+
 from __future__ import annotations
-import html, os, sys
+import html, sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
-import requests  # pip install requests
+
+import data_fetcher  # <— Wichtig: nutzt dein neues Modul
 
 PLACEHOLDER = "__REPLACE_ANIMALS_INFO__"
-API_URL = "https://api.api-ninjas.com/v1/animals"
+
 
 # ---------- IO ----------
 def read_text(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
+
 def write_text(path: str | Path, content: str) -> None:
     Path(path).write_text(content, encoding="utf-8")
 
-# ---------- utils ----------
+
+# ---------- helpers ----------
 def get_ci(d: Dict[str, Any], *keys: str) -> Optional[Any]:
     for k in keys:
-        if k in d: return d[k]
+        if k in d:
+            return d[k]
     lm = {k.lower(): v for k, v in d.items()}
     for k in keys:
         v = lm.get(k.lower())
-        if v is not None: return v
+        if v is not None:
+            return v
     return None
 
 def get_field(animal: Dict[str, Any], *keys: str) -> Optional[Any]:
@@ -34,7 +46,8 @@ def get_field(animal: Dict[str, Any], *keys: str) -> Optional[Any]:
             v = get_ci(ch, *keys)
     if isinstance(v, str):
         v = v.strip()
-        if not v: return None
+        if not v:
+            return None
     return v
 
 def format_value(value: Any) -> str:
@@ -42,20 +55,12 @@ def format_value(value: Any) -> str:
         value = ", ".join(str(x).strip() for x in value if str(x).strip())
     return html.escape(str(value))
 
-# ---------- API ----------
-def fetch_animals_from_api(name_query: str, api_key: str) -> List[Dict[str, Any]]:
-    headers = {"X-Api-Key": api_key}
-    resp = requests.get(API_URL, headers=headers, params={"name": name_query}, timeout=20)
-    resp.raise_for_status()
-    data = resp.json()
-    if not isinstance(data, list):
-        return []
-    return [x for x in data if isinstance(x, dict)]
 
-# ---------- renderers ----------
+# ---------- rendering ----------
 def serialize_animal(animal: Dict[str, Any]) -> str:
     name = get_field(animal, "name")
     title_html = f'  <div class="card__title">{html.escape(str(name))}</div>\n' if name else ""
+
     facts: List[tuple[str, Any]] = []
     for label, keys in [
         ("Diet", ("diet",)),
@@ -72,20 +77,25 @@ def serialize_animal(animal: Dict[str, Any]) -> str:
         ("Description", ("description",)),
     ]:
         val = get_field(animal, *keys)
-        if label == "Location":
-            if isinstance(val, list) and val:
-                val = val[0]
+        if label == "Location" and isinstance(val, list) and val:
+            val = val[0]
         if val is not None:
             facts.append((label, val))
-    if not (title_html or facts): return ""
+
+    if not (title_html or facts):
+        return ""
+
     facts_html = "\n".join(
         f'        <li class="card__fact"><span class="label">{html.escape(label)}:</span> {format_value(val)}</li>'
         for label, val in facts
     )
+
     item = '  <li class="cards__item">\n'
-    if title_html: item += title_html
-    item += '  <div class="card__text">\n    <ul class="card__facts">\n'
-    item += facts_html + "\n    </ul>\n  </div>\n  </li>\n"
+    if title_html:
+        item += title_html
+    item += '  <div class="card__text">\n'
+    item += '    <ul class="card__facts">\n' + facts_html + "\n"
+    item += "    </ul>\n  </div>\n  </li>\n"
     return item
 
 def build_cards(animals: Iterable[Dict[str, Any]]) -> str:
@@ -93,54 +103,36 @@ def build_cards(animals: Iterable[Dict[str, Any]]) -> str:
 
 def render_empty(query: str, details: str | None = None) -> str:
     q = html.escape(query)
-    det = f"<p class=\"empty__hint\">{html.escape(details)}</p>" if details else ""
+    det = f'<p class="empty__hint">{html.escape(details)}</p>' if details else ""
     return (
         f'<section class="empty">'
         f'<h2>The animal "{q}" doesn\'t exist.</h2>'
         f'<p>Try a different name (e.g., "Fox", "Bear", "Eagle").</p>'
-        f'{det}'
-        f"</section>"
+        f"{det}</section>"
     )
+
 
 # ---------- main ----------
 def main() -> None:
     template_path = sys.argv[1] if len(sys.argv) > 1 else "animals_template.html"
     out_path      = sys.argv[2] if len(sys.argv) > 2 else "animals.html"
 
-    query = ""
-    while not query:
-        query = input("Enter a name of an animal: ").strip()
+    animal_name = ""
+    while not animal_name:
+        animal_name = input("Please enter an animal: ").strip()
 
     template_html = read_text(template_path)
 
-    api_key = os.getenv("API_NINJAS_KEY", "yCVFwvLElGXaZ24+Gu0q5Q==YjW5E3z1TR2NEafS").strip()
-    if not api_key:
-        write_text(out_path, template_html.replace(PLACEHOLDER, render_empty(query, "Missing API key.")))
-        print("Website was generated with an error message (missing API key)."); return
-
     try:
-        animals = fetch_animals_from_api(query, api_key)
-    except requests.HTTPError as e:
-        msg = f"API error: {e.response.status_code}"
-        try:
-            msg += f" • {e.response.json()}"
-        except Exception:
-            msg += f" • {e.response.text[:200]}"
-        html_content = template_html.replace(PLACEHOLDER, render_empty(query, msg))
-        write_text(out_path, html_content)
-        print("Website was generated with an API error message."); return
+        data = data_fetcher.fetch_data(animal_name)
     except Exception as e:
-        html_content = template_html.replace(PLACEHOLDER, render_empty(query, f"Unexpected error: {e}"))
-        write_text(out_path, html_content)
-        print("Website was generated with an error message."); return
+        html_out = template_html.replace(PLACEHOLDER, render_empty(animal_name, f"Error: {e}"))
+        write_text(out_path, html_out)
+        print("Website was generated with an error message.")
+        return
 
-    # Ergebnis schreiben – leerer Treffer => hübsche Nachricht
-    if not animals:
-        html_content = template_html.replace(PLACEHOLDER, render_empty(query))
-    else:
-        html_content = template_html.replace(PLACEHOLDER, build_cards(animals))
-
-    write_text(out_path, html_content)
+    html_block = build_cards(data) if data else render_empty(animal_name)
+    write_text(out_path, template_html.replace(PLACEHOLDER, html_block))
     print("Website was successfully generated to the file animals.html.")
 
 if __name__ == "__main__":
