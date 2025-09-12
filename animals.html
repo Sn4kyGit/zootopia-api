@@ -1,0 +1,244 @@
+<html>
+    <head>
+        <style>
+        @gray-darker:               #444444;
+        @gray-dark:                 #696969;
+        @gray:                      #999999;
+        @gray-light:                #cccccc;
+        @gray-lighter:              #ececec;
+        @gray-lightest:             lighten(@gray-lighter,4%);
+
+
+        html {
+          background-color: #ffe9e9;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 40pt;
+            font-weight: normal;
+        }
+
+        body {
+          font-family: 'Roboto','Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-style: normal;
+          font-weight: 400;
+          letter-spacing: 0;
+          padding: 1rem;
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          -moz-font-feature-settings: "liga" on;
+          width: 900px;
+          margin: auto;
+        }
+
+        .cards {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        .cards__item {
+          background-color: white;
+          border-radius: 0.25rem;
+          box-shadow: 0 20px 40px -14px rgba(0,0,0,0.25);
+          overflow: hidden;
+          padding: 1rem;
+          margin: 50px;
+        }
+
+        .card__title {
+          color: @gray-dark;
+          font-size: 1.25rem;
+          font-weight: 300;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .card__text {
+          flex: 1 1 auto;
+          font-size: 0.95rem;
+          line-height: 2;
+          margin-bottom: 1.25rem;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>My Animal Repository</h1>
+        <ul class="cards">
+              <li class="cards__item">
+  <div class="card__title">Arctic Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Carnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Eurasia</li>
+        <li class="card__fact"><span class="label">Type:</span> Mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 7 - 10 years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 1.4kg - 9.4kg (3lbs - 21lbs)</li>
+        <li class="card__fact"><span class="label">Length:</span> 70cm - 110cm (28in - 43in)</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 30 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Polar forest regions</li>
+        <li class="card__fact"><span class="label">Color(s):</span> GreyBlackWhite</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Cross Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Carnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> North-America</li>
+        <li class="card__fact"><span class="label">Type:</span> mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 10 to 15 years in captivity, seven years in the wild</li>
+        <li class="card__fact"><span class="label">Length:</span> 18 to 35 inches with 12 to 22 inch long tails, males a bit larger</li>
+        <li class="card__fact"><span class="label">Height:</span> 14 to 20 inches</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 31 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Forests, prairies, deserts, mountains, cities, suburbs, tundra, scrub, near rivers, farms</li>
+        <li class="card__fact"><span class="label">Color(s):</span> RedBlackSilver</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Darwin’s fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Omnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> South-America</li>
+        <li class="card__fact"><span class="label">Type:</span> Mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> Seven years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 4 to 8.7 pounds</li>
+        <li class="card__fact"><span class="label">Length:</span> 20.79 inches</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 45 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Temperate rainforests, shrubland</li>
+        <li class="card__fact"><span class="label">Color(s):</span> GreyRedBlack</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Fennec Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Omnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Africa</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 10 - 14 years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 1kg - 1.5kg (2.2lbs - 3.3lbs)</li>
+        <li class="card__fact"><span class="label">Length:</span> 24cm -41cm (9in - 16in)</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 25 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Sandy and semi-arid desert</li>
+        <li class="card__fact"><span class="label">Color(s):</span> WhiteCreamSandy</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Carnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Africa</li>
+        <li class="card__fact"><span class="label">Type:</span> Mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 3 - 11 years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 5kg - 11kg (11lbs - 24lbs)</li>
+        <li class="card__fact"><span class="label">Length:</span> 40cm - 83cm (16in - 33in)</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 29 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Woodland areas and urban parks</li>
+        <li class="card__fact"><span class="label">Color(s):</span> BrownRedBlackTan</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Fox Squirrel</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Omnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Central-America</li>
+        <li class="card__fact"><span class="label">Type:</span> rodent</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 6-12.6 years</li>
+        <li class="card__fact"><span class="label">Length:</span> 21 inches</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 17 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Leaf nests and tree dens</li>
+        <li class="card__fact"><span class="label">Color(s):</span> BrownGrey-Brown</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Gray Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Omnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Central-America</li>
+        <li class="card__fact"><span class="label">Type:</span> Mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 6-12 years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 3.2-6.4kg (7-14lbs)</li>
+        <li class="card__fact"><span class="label">Length:</span> 89-105cm (35-41in)</li>
+        <li class="card__fact"><span class="label">Height:</span> 30-40cm (12-16in)</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 28 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Forests and plains</li>
+        <li class="card__fact"><span class="label">Color(s):</span> GreyRedBlackWhite</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Kit Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Omnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Central-America</li>
+        <li class="card__fact"><span class="label">Type:</span> mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> seven years in the wild. 12 years in captivity</li>
+        <li class="card__fact"><span class="label">Weight:</span> 4.5 to five pounds</li>
+        <li class="card__fact"><span class="label">Length:</span> 20 inches (body), 12 inches (tail)</li>
+        <li class="card__fact"><span class="label">Height:</span> nine to 12 inches</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 25 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> desert, grasslands</li>
+        <li class="card__fact"><span class="label">Color(s):</span> GreyYellowBlackWhite</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Marble Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Omnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> North-America</li>
+        <li class="card__fact"><span class="label">Type:</span> Mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> Up to 15 years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 1-10kg (3-21lbs)</li>
+        <li class="card__fact"><span class="label">Length:</span> Up to 63cm (25in) in body length, not including the tail</li>
+        <li class="card__fact"><span class="label">Height:</span> Up to 69cm (27in)</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 30 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Human captivity</li>
+        <li class="card__fact"><span class="label">Color(s):</span> BrownBlackWhite</li>
+    </ul>
+  </div>
+  </li>
+  <li class="cards__item">
+  <div class="card__title">Tibetan Fox</div>
+  <div class="card__text">
+    <ul class="card__facts">
+        <li class="card__fact"><span class="label">Diet:</span> Carnivore</li>
+        <li class="card__fact"><span class="label">Location:</span> Asia</li>
+        <li class="card__fact"><span class="label">Type:</span> Mammal</li>
+        <li class="card__fact"><span class="label">Skin type:</span> Fur</li>
+        <li class="card__fact"><span class="label">Lifespan:</span> 8-10 years</li>
+        <li class="card__fact"><span class="label">Weight:</span> 8-12 lbs (4-5 kg)</li>
+        <li class="card__fact"><span class="label">Length:</span> 24-28 in (60-70 cm)</li>
+        <li class="card__fact"><span class="label">Top speed:</span> 44 mph</li>
+        <li class="card__fact"><span class="label">Habitat:</span> Tibetan Plateau</li>
+        <li class="card__fact"><span class="label">Color(s):</span> GreyTan</li>
+    </ul>
+  </div>
+  </li>
+
+        </ul>
+    </body>
+</html>
