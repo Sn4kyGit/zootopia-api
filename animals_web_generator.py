@@ -1,19 +1,23 @@
+# animals_web_generator.py
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
 Zootopia with API — Website Generator
+
 - Fragt den Tiernamen ab
 - Holt die Daten via data_fetcher.fetch_data()
-- Rendert Cards oder eine leere-State-Meldung
+- Rendert Cards oder eine leere-State-Meldung ins Template
 """
 
 from __future__ import annotations
-import html, sys
+
+import html
+import sys
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-import data_fetcher  # <— Wichtig: nutzt dein neues Modul
+import data_fetcher  # eigenes Modul, das die API abruft
 
 PLACEHOLDER = "__REPLACE_ANIMALS_INFO__"
 
@@ -22,23 +26,30 @@ PLACEHOLDER = "__REPLACE_ANIMALS_INFO__"
 def read_text(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
 
+
 def write_text(path: str | Path, content: str) -> None:
     Path(path).write_text(content, encoding="utf-8")
 
 
 # ---------- helpers ----------
 def get_ci(d: Dict[str, Any], *keys: str) -> Optional[Any]:
+    """Case-insensitive Getter: liefert den Wert zum ersten passenden Key."""
     for k in keys:
         if k in d:
             return d[k]
-    lm = {k.lower(): v for k, v in d.items()}
+    lower_map = {k.lower(): v for k, v in d.items()}
     for k in keys:
-        v = lm.get(k.lower())
+        v = lower_map.get(k.lower())
         if v is not None:
             return v
     return None
 
+
 def get_field(animal: Dict[str, Any], *keys: str) -> Optional[Any]:
+    """
+    Sucht ein Feld zuerst auf Top-Level, dann in 'characteristics'.
+    Leere Strings -> None.
+    """
     v = get_ci(animal, *keys)
     if v is None:
         ch = get_ci(animal, "characteristics")
@@ -50,7 +61,9 @@ def get_field(animal: Dict[str, Any], *keys: str) -> Optional[Any]:
             return None
     return v
 
+
 def format_value(value: Any) -> str:
+    """Listen als kommagetrennten Text rendern und HTML escapen."""
     if isinstance(value, (list, tuple)):
         value = ", ".join(str(x).strip() for x in value if str(x).strip())
     return html.escape(str(value))
@@ -58,8 +71,21 @@ def format_value(value: Any) -> str:
 
 # ---------- rendering ----------
 def serialize_animal(animal: Dict[str, Any]) -> str:
+    """
+    <li class="cards__item">
+      <div class="card__title">Name</div>
+      <div class="card__text">
+        <ul class="card__facts">
+          <li class="card__fact"><span class="label">Diet:</span> ...</li>
+          ...
+        </ul>
+      </div>
+    </li>
+    """
     name = get_field(animal, "name")
-    title_html = f'  <div class="card__title">{html.escape(str(name))}</div>\n' if name else ""
+    title_html = (
+        f'  <div class="card__title">{html.escape(str(name))}</div>\n' if name else ""
+    )
 
     facts: List[tuple[str, Any]] = []
     for label, keys in [
@@ -77,8 +103,12 @@ def serialize_animal(animal: Dict[str, Any]) -> str:
         ("Description", ("description",)),
     ]:
         val = get_field(animal, *keys)
-        if label == "Location" and isinstance(val, list) and val:
-            val = val[0]
+
+        # Für Locations nur den ersten Eintrag zeigen (wie bisher)
+        if label == "Location":
+            if isinstance(val, list) and val:
+                val = val[0]
+
         if val is not None:
             facts.append((label, val))
 
@@ -98,10 +128,13 @@ def serialize_animal(animal: Dict[str, Any]) -> str:
     item += "    </ul>\n  </div>\n  </li>\n"
     return item
 
+
 def build_cards(animals: Iterable[Dict[str, Any]]) -> str:
     return "".join(serialize_animal(a) for a in animals if isinstance(a, dict))
 
+
 def render_empty(query: str, details: str | None = None) -> str:
+    """Leerer Zustand als hübscher Block."""
     q = html.escape(query)
     det = f'<p class="empty__hint">{html.escape(details)}</p>' if details else ""
     return (
@@ -115,7 +148,7 @@ def render_empty(query: str, details: str | None = None) -> str:
 # ---------- main ----------
 def main() -> None:
     template_path = sys.argv[1] if len(sys.argv) > 1 else "animals_template.html"
-    out_path      = sys.argv[2] if len(sys.argv) > 2 else "animals.html"
+    out_path = sys.argv[2] if len(sys.argv) > 2 else "animals.html"
 
     animal_name = ""
     while not animal_name:
@@ -126,7 +159,9 @@ def main() -> None:
     try:
         data = data_fetcher.fetch_data(animal_name)
     except Exception as e:
-        html_out = template_html.replace(PLACEHOLDER, render_empty(animal_name, f"Error: {e}"))
+        html_out = template_html.replace(
+            PLACEHOLDER, render_empty(animal_name, f"Error: {e}")
+        )
         write_text(out_path, html_out)
         print("Website was generated with an error message.")
         return
@@ -134,6 +169,7 @@ def main() -> None:
     html_block = build_cards(data) if data else render_empty(animal_name)
     write_text(out_path, template_html.replace(PLACEHOLDER, html_block))
     print("Website was successfully generated to the file animals.html.")
+
 
 if __name__ == "__main__":
     main()
